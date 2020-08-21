@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>CIDR2MASK</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0">
+		<style>
+			body {
+				background-color: grey;
+			}
+
+			#box {
+				background-color: white;
+				border-style: solid;
+				padding: 10px;
+				padding-top: 0px;
+				margin: auto;
+				width: 350px;
+				height: 300px;
+				position: relative;
+			}
+
+			#a {
+				width: 100%;
+				margin: 0 auto;
+				margin-bottom: 7px;
+			}
+
+			#inputboxa1 {
+				width: 80%;
+				border-style: solid;
+				border-width: 4px;
+				border-radius: 10px;
+				border-color: RGB(135,206,235);
+				height: 40px;
+				font-size: 100%;
+			}
+
+			#inputboxa2 {
+				width: 80%;
+				border-style: solid;
+				border-width: 4px;
+				border-radius: 10px;
+				border-color: RGB(135,206,235);
+				height: 40px;
+				font-size: 100%;
+			}
+
+			#inputboxb {
+				width: 50px;
+				border-style: solid;
+				border-width: 4px;
+				border-radius: 10px;
+				border-color: RGB(135,206,235);
+				height: 50px;
+				font-size:140%;
+			}
+
+			#td {
+				width: 43%;
+				text-align: left;
+				padding-left: 40px;
+			}
+
+			td {
+				font-size: 120%;
+				height: 55px;
+			}
+
+			#mybutton {
+				margin-right: 50px;
+				border-style: solid;
+				border-width: 4px;
+				border-radius: 30px;
+				width: 55px;
+				height: 50px;
+				position: absolute;	
+				right: 0px;
+			}
+
+			p {
+				height: 10px;
+				text-align: center;
+				font-size: 150%;
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<p>CIDR2MASK</p>
+			<table id="a">
+				<tr>
+					<td id="td">CIDR：</td><td><input type="text" id="inputboxb"></td>
+				</tr>
+				<tr>
+					<td id="td">子网掩码：</td><td><input type="text" id="inputboxa1" readonly="readonly"></td>
+				</tr>
+				<tr>
+					<td id="td">反掩码：</td><td><input type="text" id="inputboxa2" readonly="readonly"></td>
+				</tr>
+			</table>
+			<input type="button" value="计算" id="mybutton" onclick=clickfunc();>
+		</div>
+		<script>
+			function cidr2mask(cidr)
+			{
+				var add = Array(0,0,0,0);
+				var i = 0;
+				for (; i < Math.floor(cidr/8); ++i)
+					add[i] = 255;
+				var a = 128;
+
+				for (var j = cidr%8; (i < 4) && (j >= 0); --j)
+					add[i] += a >> (j-1);
+				return add;
+			}
+
+			function wild2mask(cidr)
+			{
+				var n = 0;
+				var add = Array(0,0,0,0);
+				for (var i = (32 - cidr); i > 0; --i)
+					n += 1<<(i-1);
+				for (var i = 0; i < 4; ++i)
+					add[i] = (n & (0xff000000 >>> (i*8))) >>> ((3-i)*8);
+				return add;
+			}
+
+			function clickfunc()
+			{
+				var cidr = parseInt(document.getElementById("inputboxb").value);
+				if (cidr > -1 && cidr < 33)
+				{
+					document.getElementById("inputboxa1").value = cidr2mask(cidr);
+					document.getElementById("inputboxa2").value = wild2mask(cidr);
+				}
+				else 
+					alert("输入非法");
+			}
+		</script>
+	</body>
+</html>
